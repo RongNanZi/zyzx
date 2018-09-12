@@ -3,19 +3,6 @@ import re
 from collections import Counter
 
 def get_list_kv(re_path, sentence):
-
-"""
-        special regular exprssion for small tranffic kinds
-
-Arguments:
-
-re_path: string, regular expression file's path)
-
-sentece: string, parsed sentence
-
-return: 
-        wanted: dict
-"""
     wanted = {}
     re_expressions = pd.read_csv(re_path)['re'].values
     k = 1
@@ -39,16 +26,6 @@ return:
 
 
 def get_kv(re_path, sentence):
-"""
-        find key-value
-
-        Argments:
-                re_path: string, regular expression file's path
-
-                sentence: string, parsed sentence
-        return:
-                eanted: list of dict object
-"""
     wanted = []
     re_csv = pd.read_csv(re_path)
     for i in re_csv.index:
