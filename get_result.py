@@ -46,12 +46,15 @@ def get_kv(re_path, sentence):
                            'value': value} )
     return wanted
 
-def get_result(sentence):
+def get_result(sentence,kre_path, kre_list_path = None):
 
-    #the output is dict object 
-    list_kv = get_list_kv('data/kre_list.csv', sentence)
+    #the output is dict object
+    if kre_list_path is not None:
+        list_kv = get_list_kv(kre_list_path, sentence)
+    else:
+        list_kv ={}
     #the output is a dict list
-    kv = get_kv('data/kre.csv', sentence)
+    kv = get_kv(kre_path, sentence)
     
     if len(kv) == 0:
         return list_kv
