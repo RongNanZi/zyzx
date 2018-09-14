@@ -43,7 +43,8 @@ def get_kv(re_path, sentence):
             wanted.append({'find': find, \
                            'key': key, \
                            'cn_key': cn_key, \
-                           'value': value} )
+                           'value': value, \
+                          'level': re_csv.loc[i]['level']})
     return wanted
 
 def get_result(sentence,kre_path, kre_list_path = None):
@@ -59,6 +60,14 @@ def get_result(sentence,kre_path, kre_list_path = None):
     if len(kv) == 0:
         return list_kv
     kv_df = pd.DataFrame(kv)
+    #selected level higher values
+    def get_level(df):
+        if df.shape[0]< 2:
+            return df
+        level_values = df.sort_values("level",ascending=False)['level'].values
+        return df[df.level == level_values[0]]
+    kv_df = kv_df.groupby(['cn_key']).apply(get_level)
+    
     #vote same (cn_key, value) ,drop other cn_key but not same values
     def vote(df):
         if df.shape[0]< 3:
@@ -69,7 +78,7 @@ def get_result(sentence,kre_path, kre_list_path = None):
         v_c = Counter(all_values)
         most_v = v_c.most_common(1)
         return df[df.value==most_v[0][0]]
-    v_df = kv_df.groupby(['cn_key']).apply(vote)
+    kv_df = kv_df.groupby('cn_key').apply(vote)
     
     # drop the same (cn_key, value) item 
     kv_df = kv_df.drop_duplicates(['cn_key', 'value'])
@@ -88,7 +97,7 @@ def get_result(sentence,kre_path, kre_list_path = None):
         df['find_length'] = find_length
         min_len = min(find_length)
         return df[df.find_length == min_len]
-    kv_df= kv_df.groupby(['cn_key']).apply(get_minlen_find)
+    kv_df= kv_df.groupby('cn_key').apply(get_minlen_find)
     
     #if all (cn_key, value) is unique, return result
     cn_key_list = kv_df['cn_key'].values
